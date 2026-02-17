@@ -1,10 +1,12 @@
 from datetime import datetime, date, time
 from typing import Optional
+from pydantic import BaseModel, Field
 from pydantic import BaseModel, EmailStr, Field
 from .models import Role, AgendaType, AgendaStatus, PaymentStatus, TicketStatus, CoverageStatus
 
 
 class LoginRequest(BaseModel):
+    email: str
     email: EmailStr
     password: str = Field(min_length=6)
 
@@ -16,6 +18,7 @@ class TokenResponse(BaseModel):
 
 class UserCreate(BaseModel):
     name: str
+    email: str
     email: EmailStr
     password: str = Field(min_length=6)
     role: Role
@@ -25,6 +28,7 @@ class UserCreate(BaseModel):
 class UserOut(BaseModel):
     id: int
     name: str
+    email: str
     email: EmailStr
     role: Role
     unit_id: Optional[int] = None

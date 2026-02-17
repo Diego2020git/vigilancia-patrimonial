@@ -10,6 +10,7 @@ from .db import get_session
 from .models import User, Role
 
 pwd_context = CryptContext(schemes=["bcrypt_sha256", "bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
@@ -22,6 +23,7 @@ def verify_password(password: str, hash_: str) -> bool:
         return pwd_context.verify(password, hash_)
     except ValueError:
         return False
+    return pwd_context.verify(password, hash_)
 
 
 def create_access_token(subject: str, expires_delta: Optional[timedelta] = None) -> str:

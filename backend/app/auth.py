@@ -4,6 +4,8 @@ import hashlib
 import base64
 import bcrypt
 from jose import jwt, JWTError
+from jose import jwt, JWTError
+from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlmodel import Session, select
@@ -23,6 +25,13 @@ def hash_password(password: str) -> str:
     prehashed = _prehash(password)
     hashed = bcrypt.hashpw(prehashed, bcrypt.gensalt()).decode("utf-8")
     return f"sha256_bcrypt${hashed}"
+pwd_context = CryptContext(schemes=["bcrypt_sha256", "bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+
+
+def hash_password(password: str) -> str:
+    return pwd_context.hash(password)
 
 
 def verify_password(password: str, hash_: str) -> bool:
@@ -38,6 +47,10 @@ def verify_password(password: str, hash_: str) -> bool:
         return False
     except ValueError:
         return False
+        return pwd_context.verify(password, hash_)
+    except ValueError:
+        return False
+    return pwd_context.verify(password, hash_)
 
 
 def create_access_token(subject: str, expires_delta: Optional[timedelta] = None) -> str:

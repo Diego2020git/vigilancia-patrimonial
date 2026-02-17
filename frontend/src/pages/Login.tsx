@@ -25,6 +25,8 @@ export default function Login() {
       } else {
         setError("Falha no login. Verifique usuário e senha.")
       }
+    } catch {
+      setError('Falha no login. Verifique usuário e senha.')
     }
   }
 

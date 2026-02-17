@@ -14,6 +14,10 @@ py -m venv .venv
 .\.venv\Scripts\python.exe -m pip install --upgrade pip
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 ## Endpoints principais
@@ -28,3 +32,15 @@ py -m venv .venv
 - `GET /audit`
 
 Documentação interativa: `/docs`
+
+
+## Troubleshooting (Windows)
+
+Se ocorrer `ImportError: email-validator is not installed`, recrie o ambiente:
+
+```bat
+if exist .venv rmdir /s /q .venv
+py -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m pip install "pydantic[email]"
+```

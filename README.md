@@ -18,6 +18,10 @@ Projeto completo com **backend FastAPI** e **frontend React + Vite + TypeScript*
 
 ```bat
 cd backend
+py -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --upgrade pip
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
@@ -60,3 +64,14 @@ Frontend: `http://localhost:5173`
 
 - `scripts\start_backend_windows.bat`
 - `scripts\start_frontend_windows.bat`
+
+
+## Solução rápida para erro `email-validator`
+
+Se aparecer `ImportError: email-validator is not installed`, rode o script atualizado de backend:
+
+```bat
+.\scripts\start_backend_windows.bat
+```
+
+Esse script valida o ambiente e força a instalação de `pydantic[email]` se o `email_validator` não estiver disponível.

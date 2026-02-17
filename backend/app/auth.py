@@ -1,5 +1,9 @@
 from datetime import datetime, timedelta, timezone
 from typing import Optional
+import hashlib
+import base64
+import bcrypt
+from jose import jwt, JWTError
 from jose import jwt, JWTError
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
@@ -9,6 +13,18 @@ from .config import settings
 from .db import get_session
 from .models import User, Role
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+
+
+def _prehash(password: str) -> bytes:
+    digest = hashlib.sha256(password.encode("utf-8")).digest()
+    return base64.b64encode(digest)
+
+
+def hash_password(password: str) -> str:
+    prehashed = _prehash(password)
+    hashed = bcrypt.hashpw(prehashed, bcrypt.gensalt()).decode("utf-8")
+    return f"sha256_bcrypt${hashed}"
 pwd_context = CryptContext(schemes=["bcrypt_sha256", "bcrypt"], deprecated="auto")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
@@ -20,6 +36,17 @@ def hash_password(password: str) -> str:
 
 def verify_password(password: str, hash_: str) -> bool:
     try:
+        if hash_.startswith("sha256_bcrypt$"):
+            stored = hash_.split("$", 1)[1].encode("utf-8")
+            return bcrypt.checkpw(_prehash(password), stored)
+
+        # backward compatibility with plain bcrypt hashes
+        if hash_.startswith("$2"):
+            return bcrypt.checkpw(password.encode("utf-8"), hash_.encode("utf-8"))
+
+        return False
+    except ValueError:
+        return False
         return pwd_context.verify(password, hash_)
     except ValueError:
         return False

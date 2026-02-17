@@ -15,6 +15,8 @@ from .services import add_audit, has_overlap, in_lock_window
 app = FastAPI(title="Vigilância Patrimonial API", version="1.0.0")
 app.add_middleware(
     CORSMiddleware,
+    allow_origins=[settings.cors_origin, "http://127.0.0.1:5173", "http://localhost:4173", "http://127.0.0.1:4173"],
+    allow_origin_regex=r"http://(localhost|127\.0\.0\.1)(:\d+)?",
     allow_origins=[settings.cors_origin],
     allow_credentials=True,
     allow_methods=["*"],

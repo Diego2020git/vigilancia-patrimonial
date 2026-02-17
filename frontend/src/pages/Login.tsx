@@ -18,6 +18,13 @@ export default function Login() {
       const me = (await api.get('/me')).data
       setAuth(token, me?.role || null)
       nav('/dashboard')
+    } catch (err: any) {
+      const detail = err?.response?.data?.detail
+      if (typeof detail === "string") {
+        setError(`Falha no login: ${detail}`)
+      } else {
+        setError("Falha no login. Verifique usuário e senha.")
+      }
     } catch {
       setError('Falha no login. Verifique usuário e senha.')
     }
